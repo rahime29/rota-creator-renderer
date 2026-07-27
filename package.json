@@ -1,0 +1,23 @@
+{
+  "name": "rota-creator-renderer",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Automated Remotion renderer for Rota Creator travel Shorts",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "render": "remotion render src/index.ts RotaCreatorShort out/video.mp4",
+    "render:props": "remotion render src/index.ts RotaCreatorShort out/video.mp4 --props=render-input.json"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.499",
+    "@remotion/media-utils": "4.0.499",
+    "remotion": "4.0.499",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.3",
+    "@types/react-dom": "18.3.0",
+    "typescript": "5.5.4"
+  }
+}

@@ -6,19 +6,19 @@ const defaultProps: TravelVideoProps = {
   project: "Rota Creator",
 
   video: {
-    video_id: "rota-creator-test",
+    video_id: "test-video",
     route_id: "test-route",
     package_id: "test-package",
 
-    city: "Istanbul",
-    country: "Turkey",
+    city: "",
+    country: "",
     day: 1,
 
-    title: "Istanbul Day 1",
-    hook: "Your ready-made Istanbul route.",
+    title: "",
+    hook: "",
 
-    route_theme: "Historic Istanbul",
-    area_focus: "Sultanahmet",
+    route_theme: "",
+    area_focus: "",
 
     closing_text:
       "Follow Rota Creator for more ready-made routes.",

@@ -1,0 +1,52 @@
+name: Render Rota Creator Video
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    name: Render MP4
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Create output directory
+        run: mkdir -p out
+
+      - name: Render video
+        run: |
+          npx remotion render \
+            src/index.ts \
+            TravelVideo \
+            out/rota-creator-test.mp4 \
+            --codec=h264 \
+            --pixel-format=yuv420p \
+            --log=verbose
+
+      - name: Verify rendered file
+        run: |
+          test -f out/rota-creator-test.mp4
+          ls -lh out/rota-creator-test.mp4
+
+      - name: Upload rendered video
+        uses: actions/upload-artifact@v4
+        with:
+          name: rota-creator-test-video
+          path: out/rota-creator-test.mp4
+          if-no-files-found: error
+          retention-days: 7

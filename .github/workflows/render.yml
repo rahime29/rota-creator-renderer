@@ -107,19 +107,20 @@ jobs:
           echo "Video URL: $SECURE_URL"
           
       - name: Notify n8n
+        env:
+          SECURE_URL: ${{ steps.cloudinary_upload.outputs.secure_url }}
+          PUBLIC_ID: ${{ steps.cloudinary_upload.outputs.public_id }}
         run: |
-          curl -X POST "https://rahime.app.n8n.cloud/webhook/16259747-bd33-4f0c-9b14-9556ff198703" \
+          PAYLOAD=$(jq -n \
+            --arg secure_url "$SECURE_URL" \
+            --arg public_id "$PUBLIC_ID" \
+            '{
+              secure_url: $secure_url,
+              public_id: $public_id
+            }')
+
+          curl --fail-with-body --silent --show-error \
+            -X POST \
+            "https://rahime.app.n8n.cloud/webhook/16259747-bd33-4f0c-9b14-9556ff198703" \
             -H "Content-Type: application/json" \
-            -d '{
-              "secure_url":"${{ steps.cloudinary_upload.outputs.secure_url }}",
-              "public_id":"${{ steps.cloudinary_upload.outputs.public_id }}"
-            }'
-      
-            - name: Upload rendered video artifact
-              uses: actions/upload-artifact@v4
-              with:
-        
-          name: rota-creator-rendered-video
-          path: out/rota-creator-video.mp4
-          if-no-files-found: error
-          retention-days: 7
+            --data "$PAYLOAD"

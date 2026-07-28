@@ -105,10 +105,20 @@ jobs:
 
           echo "Cloudinary upload successful"
           echo "Video URL: $SECURE_URL"
-
-      - name: Upload rendered video artifact
-        uses: actions/upload-artifact@v4
-        with:
+          
+      - name: Notify n8n
+        run: |
+          curl -X POST "<BURAYA_WEBHOOK_URL>" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "secure_url":"${{ steps.cloudinary_upload.outputs.secure_url }}",
+              "public_id":"${{ steps.cloudinary_upload.outputs.public_id }}"
+            }'
+      
+            - name: Upload rendered video artifact
+              uses: actions/upload-artifact@v4
+              with:
+        
           name: rota-creator-rendered-video
           path: out/rota-creator-video.mp4
           if-no-files-found: error

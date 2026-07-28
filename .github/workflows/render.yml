@@ -108,7 +108,7 @@ jobs:
           
       - name: Notify n8n
         run: |
-          curl -X POST "<BURAYA_WEBHOOK_URL>" \
+          curl -X POST "https://rahime.app.n8n.cloud/webhook/16259747-bd33-4f0c-9b14-9556ff198703" \
             -H "Content-Type: application/json" \
             -d '{
               "secure_url":"${{ steps.cloudinary_upload.outputs.secure_url }}",

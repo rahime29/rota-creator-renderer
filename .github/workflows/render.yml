@@ -3,8 +3,8 @@ name: Render Rota Creator Video
 on:
   workflow_dispatch:
     inputs:
-      props_url:
-        description: "Public URL of the Remotion input props JSON"
+      props_base64:
+        description: "Base64 encoded Remotion input props"
         required: true
         type: string
 
@@ -32,22 +32,18 @@ jobs:
       - name: Create output directory
         run: mkdir -p out
 
-      - name: Download render input
+      - name: Decode render input
         env:
-          PROPS_URL: ${{ inputs.props_url }}
+          PROPS_BASE64: ${{ inputs.props_base64 }}
         run: |
-          if [ -z "$PROPS_URL" ]; then
-            echo "props_url is empty"
+          if [ -z "$PROPS_BASE64" ]; then
+            echo "props_base64 is empty"
             exit 1
           fi
 
-          curl \
-            --fail \
-            --location \
-            --retry 3 \
-            --retry-delay 3 \
-            "$PROPS_URL" \
-            --output render-input.json
+          printf '%s' "$PROPS_BASE64" \
+            | base64 --decode \
+            > render-input.json
 
       - name: Validate render input
         run: |

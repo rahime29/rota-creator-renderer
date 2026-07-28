@@ -67,6 +67,45 @@ jobs:
           test -f out/rota-creator-video.mp4
           ls -lh out/rota-creator-video.mp4
 
+      - name: Upload video to Cloudinary
+        id: cloudinary_upload
+        env:
+          CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+          CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+        run: |
+          TIMESTAMP=$(date +%s)
+
+          SIGNATURE=$(printf "timestamp=%s%s" \
+            "$TIMESTAMP" \
+            "$CLOUDINARY_API_SECRET" \
+            | openssl sha1 | awk '{print $2}')
+
+          RESPONSE=$(curl --fail-with-body --silent --show-error \
+            -X POST \
+            "https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/video/upload" \
+            -F "file=@out/rota-creator-video.mp4" \
+            -F "api_key=${CLOUDINARY_API_KEY}" \
+            -F "timestamp=${TIMESTAMP}" \
+            -F "signature=${SIGNATURE}")
+
+          echo "$RESPONSE" > cloudinary-response.json
+
+          SECURE_URL=$(echo "$RESPONSE" | jq -r '.secure_url')
+          PUBLIC_ID=$(echo "$RESPONSE" | jq -r '.public_id')
+
+          if [ -z "$SECURE_URL" ] || [ "$SECURE_URL" = "null" ]; then
+            echo "Cloudinary upload failed:"
+            cat cloudinary-response.json
+            exit 1
+          fi
+
+          echo "secure_url=$SECURE_URL" >> "$GITHUB_OUTPUT"
+          echo "public_id=$PUBLIC_ID" >> "$GITHUB_OUTPUT"
+
+          echo "Cloudinary upload successful"
+          echo "Video URL: $SECURE_URL"
+
       - name: Upload rendered video artifact
         uses: actions/upload-artifact@v4
         with:

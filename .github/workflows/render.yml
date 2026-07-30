@@ -44,7 +44,14 @@ jobs:
           printf '%s' "$PROPS_BASE64" \
             | base64 --decode \
             > render-input.json
+            
+      - name: Show render input
+        run: |
+          echo "========== render-input.json =========="
+          cat render-input.json
+          echo "======================================="
 
+          
       - name: Validate render input
         run: |
           jq empty render-input.json
